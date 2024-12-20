@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /**
  * Global exception handler for handling exceptions in the ticket system.
@@ -24,6 +25,18 @@ public class TicketExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse ticketNotFoundException(TicketNotFoundException e){
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
+
+    /**
+     * Handles MethodArgumentTypeMismatchException and returns a BAD_REQUEST response.
+     *
+     * @param e the MethodArgumentTypeMismatchException instance
+     * @return an ErrorResponse containing the HTTP status code and error message
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e){
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Ticket id can only have numeric value!!");
     }
 
     /**

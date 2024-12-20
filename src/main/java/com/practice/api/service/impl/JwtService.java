@@ -23,6 +23,19 @@ public class JwtService {
 
     public static final String SECRET = "82cc6415b2e2793fd0133c36f698bf6ce1faafc74ad6adb36e32a8dda708c31f";
 
+
+    /**
+     * Validates the JWT token.
+     *
+     * @param token the JWT token
+     * @param userDetails the user details to validate against
+     * @return true if the token is valid, false otherwise
+     */
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
     /**
      * Extracts the username from the JWT token.
      *
@@ -81,17 +94,6 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    /**
-     * Validates the JWT token.
-     *
-     * @param token the JWT token
-     * @param userDetails the user details to validate against
-     * @return true if the token is valid, false otherwise
-     */
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
 
     /**
      * Generates a new JWT token for the specified username.
@@ -110,6 +112,8 @@ public class JwtService {
      * @param claims the claims to include in the token
      * @param userName the username for which the token is generated
      * @return the created JWT token
+     *
+     * The token has an expiration of 1 hour
      */
     private String createToken(Map<String, Object> claims, String userName) {
         return Jwts.builder()

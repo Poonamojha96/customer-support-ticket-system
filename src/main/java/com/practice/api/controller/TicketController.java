@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.logging.Logger;
+
 /**
  * REST controller for creating and managing customer support tickets.
  * Provides endpoints for creating, updating, retrieving tickets, and generating authentication tokens.
@@ -24,6 +26,9 @@ public class TicketController {
     @Autowired
     private JwtService jwtService;
 
+    private static final Logger logger= Logger.getLogger(TicketController.class.getName());
+
+
     /**
      * Creates a new support ticket.
      *
@@ -32,6 +37,7 @@ public class TicketController {
      */
     @PostMapping()
     public ResponseEntity<Ticket> createTicket(@RequestBody TicketRequest ticketRequest) {
+        logger.info("TicketController : Inside createTicket method: ticket request: "+ticketRequest);
         Ticket ticket = ticketService.createTicket(ticketRequest);
         return ResponseEntity.ok(ticket);
     }
@@ -46,10 +52,12 @@ public class TicketController {
      */
     @PutMapping("/{ticketId}")
     public ResponseEntity<Ticket> updateTicket(@PathVariable Long ticketId, @RequestBody TicketRequest ticketRequest) {
+        logger.info("TicketController : Inside updateTicket method: ticket request: "+ticketRequest);
         Ticket ticket = null;
         if (ticketId != null) {
             ticket = ticketService.updateTicket(ticketId, ticketRequest);
         } else {
+            logger.info("Ticket id not found exception: ticket id: "+ticketId);
             throw new TicketNotFoundException("No ticket ID found !!");
         }
         return ResponseEntity.ok(ticket);
@@ -64,10 +72,12 @@ public class TicketController {
      */
     @GetMapping("/{ticketId}")
     public ResponseEntity<Ticket> getTicket(@PathVariable Long ticketId) {
+        logger.info("TicketController : Inside getTicket method: ticket id: "+ticketId);
         Ticket ticket = null;
         if (ticketId != null) {
             ticket = ticketService.getTicket(ticketId);
         } else {
+            logger.info("Ticket id not found exception: ticket id: "+ticketId);
             throw new TicketNotFoundException("No ticket ID found !!");
         }
         return ResponseEntity.ok(ticket);
@@ -81,6 +91,7 @@ public class TicketController {
      */
     @PostMapping("/authenticate")
     public String generateAuthToken(@RequestBody AuthRequest authRequest) {
+        logger.info("Inside generateAuthToken method with authRequest: "+authRequest);
         return jwtService.generateToken(authRequest.getUsername());
     }
 }

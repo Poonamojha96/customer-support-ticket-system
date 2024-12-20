@@ -2,11 +2,16 @@ spring:
   application:
     name: customer-support-ticket-system
   datasource:
-    url: jdbc:h2:mem:ticketdb
+    #url: jdbc:h2:mem:ticketdb
+    url: jdbc:h2:file:C:/Users/poonam_ojha/Documents/softwares/H2/bin/data/ticketdb
     driverClassName: org.h2.Driver
+    username: sa
+    password:
   jpa:
     defer-datasource-initialization: true   # to initialize h2 db before the execution of data.sql
     database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
   h2:
     console:
       enabled: true
@@ -15,6 +20,7 @@ spring:
     init:
       mode: always  #Sets the SQL initialization mode to always, ensuring that the data.sql file is loaded
 
+#enabled debug logs for security and sql scripts
 logging:
   level:
     org:
@@ -24,5 +30,16 @@ logging:
             init:
               ScriptUtils: DEBUG
         security: DEBUG
+#circuit breaker properties
+resilience4j:
+  circuitbreaker:
+    instances:
+      h2dbCircuitBreaker:
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 60s
+        permittedNumberOfCallsInHalfOpenState: 3
+
+
 
 

@@ -6,10 +6,12 @@ import com.practice.api.model.Status;
 import com.practice.api.model.Ticket;
 import com.practice.api.model.TicketRequest;
 import com.practice.api.service.TicketService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.logging.Logger;
 
 /**
  * Service implementation class for managing tickets.
@@ -20,6 +22,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Autowired
     TicketRepository ticketRepository;
+    private static final Logger logger= Logger.getLogger(TicketServiceImpl.class.getName());
 
     /**
      * Creates a new ticket with the provided ticket request data.
@@ -28,7 +31,9 @@ public class TicketServiceImpl implements TicketService {
      * @return the created ticket
      */
     @Override
+    @CircuitBreaker(name = "h2dbCircuitBreaker", fallbackMethod = "fallbackCreateTicket")
     public Ticket createTicket(TicketRequest ticketRequest) {
+        logger.info("TicketServiceImpl: Inside createTicket method to save the customer support request");
         Ticket ticket = Ticket.builder()
                 .description(ticketRequest.getDescription())
                 .status(String.valueOf(Status.NEW))
@@ -48,6 +53,7 @@ public class TicketServiceImpl implements TicketService {
      */
     @Override
     public Ticket updateTicket(Long ticketId, TicketRequest ticketRequest) {
+        logger.info("TicketServiceImpl: Inside updateTicket method to update the customer support request");
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new TicketNotFoundException("Ticket id:" + ticketId + " not found !!"));
         ticket.setDescription(ticketRequest.getDescription());
@@ -66,5 +72,12 @@ public class TicketServiceImpl implements TicketService {
     public Ticket getTicket(Long ticketId) {
         return ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new TicketNotFoundException("Ticket id:" + ticketId + " not found !!"));
+    }
+
+
+    //fallback method when the h2 database is down/ or a table is not found
+    public Ticket fallbackCreateTicket() {
+        logger.warning("Database is unreachable. Falling back to default create ticket.");
+        return new Ticket();
     }
 }
