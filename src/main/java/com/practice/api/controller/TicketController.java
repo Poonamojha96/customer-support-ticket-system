@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * REST controller for creating and managing customer support tickets.
+ * Provides endpoints for creating, updating, retrieving tickets, and generating authentication tokens.
+ */
 @RestController
 @RequestMapping("/v1/tickets")
 public class TicketController {
@@ -21,56 +25,62 @@ public class TicketController {
     private JwtService jwtService;
 
     /**
+     * Creates a new support ticket.
      *
-     * @param ticketRequest
-     * @return
+     * @param ticketRequest the request object containing ticket details
+     * @return the created ticket
      */
     @PostMapping()
-    public ResponseEntity<Ticket> createTicket(@RequestBody TicketRequest ticketRequest){
+    public ResponseEntity<Ticket> createTicket(@RequestBody TicketRequest ticketRequest) {
         Ticket ticket = ticketService.createTicket(ticketRequest);
         return ResponseEntity.ok(ticket);
     }
 
     /**
+     * Updates an existing support ticket.
      *
-     * @param ticketId
-     * @param ticketRequest
-     * @return
+     * @param ticketId the ID of the ticket to be updated
+     * @param ticketRequest the request object containing updated ticket details
+     * @return the updated ticket
+     * @throws TicketNotFoundException if the ticket ID is not found
      */
     @PutMapping("/{ticketId}")
     public ResponseEntity<Ticket> updateTicket(@PathVariable Long ticketId, @RequestBody TicketRequest ticketRequest) {
-        Ticket ticket= null;
-        if(null != ticketId){
+        Ticket ticket = null;
+        if (ticketId != null) {
             ticket = ticketService.updateTicket(ticketId, ticketRequest);
-        }else{
+        } else {
             throw new TicketNotFoundException("No ticket ID found !!");
         }
         return ResponseEntity.ok(ticket);
     }
 
     /**
+     * Retrieves a support ticket by its ID.
      *
-     * @param ticketId
-     * @return
+     * @param ticketId the ID of the ticket to be retrieved
+     * @return the retrieved ticket
+     * @throws TicketNotFoundException if the ticket ID is not found
      */
     @GetMapping("/{ticketId}")
     public ResponseEntity<Ticket> getTicket(@PathVariable Long ticketId) {
-        Ticket ticket= null;
-        if(null != ticketId) {
+        Ticket ticket = null;
+        if (ticketId != null) {
             ticket = ticketService.getTicket(ticketId);
-        }else
+        } else {
             throw new TicketNotFoundException("No ticket ID found !!");
+        }
         return ResponseEntity.ok(ticket);
     }
 
     /**
+     * Generates an authentication token for a user.
      *
-     * @param authRequest
-     * @return
+     * @param authRequest the request object containing authentication details
+     * @return the generated authentication token
      */
     @PostMapping("/authenticate")
-    public String generateAuthToken(@RequestBody AuthRequest authRequest){
+    public String generateAuthToken(@RequestBody AuthRequest authRequest) {
         return jwtService.generateToken(authRequest.getUsername());
     }
-
 }

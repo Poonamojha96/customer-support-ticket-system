@@ -1,6 +1,6 @@
 package com.practice.api.filter;
 
-import com.practice.api.service.impl.UserInfoUserDetailsService;
+import com.practice.api.service.impl.UserInfoServiceImpl;
 import com.practice.api.service.impl.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,6 +16,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * JWT authentication filter that processes authentication for every request.
+ * This filter checks the validity of JWT tokens in the Authorization header
+ * and sets the authentication in the security context if valid.
+ */
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -23,8 +28,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private JwtService jwtService;
 
     @Autowired
-    private UserInfoUserDetailsService userDetailsService;
+    private UserInfoServiceImpl userDetailsService;
 
+    /**
+     * Filters incoming requests to validate JWT tokens and set authentication.
+     *
+     * @param request the HTTP request
+     * @param response the HTTP response
+     * @param filterChain the filter chain
+     * @throws ServletException if an error occurs during filtering
+     * @throws IOException if an I/O error occurs during filtering
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");

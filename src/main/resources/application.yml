@@ -11,17 +11,9 @@ spring:
     console:
       enabled: true
       path: /h2-console
-
   sql:
     init:
-      mode: always
-
-
-
-#  security:
-#    user:
-#      name: "Poonam"
-#      password": "pwd1"
+      mode: always  #Sets the SQL initialization mode to always, ensuring that the data.sql file is loaded
 
 logging:
   level:
