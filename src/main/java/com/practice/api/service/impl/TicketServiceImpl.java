@@ -22,7 +22,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Autowired
     TicketRepository ticketRepository;
-    private static final Logger logger= Logger.getLogger(TicketServiceImpl.class.getName());
+    private static final Logger logger = Logger.getLogger(TicketServiceImpl.class.getName());
 
     /**
      * Creates a new ticket with the provided ticket request data.
@@ -74,9 +74,14 @@ public class TicketServiceImpl implements TicketService {
                 .orElseThrow(() -> new TicketNotFoundException("Ticket id:" + ticketId + " not found !!"));
     }
 
-
-    //fallback method when the h2 database is down/ or a table is not found
-    public Ticket fallbackCreateTicket() {
+    /**
+     * Fallback method for createTicket when the H2 database is down or a table is not found.
+     *
+     * @param ticketRequest the request object containing ticket details
+     * @param throwable the throwable that caused the fallback
+     * @return a default ticket
+     */
+    public Ticket fallbackCreateTicket(TicketRequest ticketRequest, Throwable throwable) {
         logger.warning("Database is unreachable. Falling back to default create ticket.");
         return new Ticket();
     }
