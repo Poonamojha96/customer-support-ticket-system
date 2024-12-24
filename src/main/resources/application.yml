@@ -37,7 +37,7 @@ resilience4j:
       h2dbCircuitBreaker:
         slidingWindowSize: 5
         failureRateThreshold: 50
-        waitDurationInOpenState: 60s
+        waitDurationInOpenState: 30s
         permittedNumberOfCallsInHalfOpenState: 3
 
 
